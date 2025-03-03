@@ -1,0 +1,20 @@
+build/
+build_new/
+.vscode/
+data/
+# *.txt
+*.xlsx
+*.csv
+build_H100/
+*.report
+*.ncu-rep
+*.nsys-rep
+.cache/
+# test/
+log/
+*.ptx
+*.cubin
+*.sass
+*.png
+*.pdf
+
