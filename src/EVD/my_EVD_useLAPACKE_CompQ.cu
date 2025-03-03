@@ -175,8 +175,33 @@ int main(int argc, char *argv[])
 
   launchKernel_copyMatrix(gridDim, blockDim, m, n, dT, m, dA, m);
 
+  // printAndWriteMatrixToCsvV2(dA, m, m, n, "Symatrix_A_128x128.csv"); 
+
 
   CUDA_RT_CALL(cudaFree(dT));
+
+#define USE_MATRIX_FILE 1
+#if USE_MATRIX_FILE
+  string fileName = "/work/home/szhang94/wanghs/SugaSyEVD/data/Symatrix_A_128x128.csv";
+  vector<vector<double>> data = readMatrixFromFile(fileName);
+
+  m = data.size();
+  n = data[0].size();
+  double *A;
+
+  A = (double *)malloc(sizeof(double) * m * n);
+
+  fillMatrix(A, data);
+  cudaMemcpy(dA, A, sizeof(double) * m * n, cudaMemcpyHostToDevice);
+  free(A);
+
+  // printf("Origin dA:\n");
+  // // 打印开头的3x3个元A
+  // printDeviceMatrixV2(dA, m, 3, 3);
+
+  // // 打印结尾的3x3个元素
+  // printDeviceMatrixV2(dA + (m - 3) + (n - 3) * m, m, 3, 3);
+#endif
 
   double *dwork, *dR, *dW, *dY, *dZ;
 
