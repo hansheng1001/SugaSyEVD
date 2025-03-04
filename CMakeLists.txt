@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.12)
 
 
+# set(CMAKE_C_COMPILER "/opt/dtk/cuda/bin/nvcc")
+# set(CMAKE_CXX_COMPILER "/opt/dtk/cuda/bin/nvcc")
+
+
 set(CMAKE_BUILD_TYPE "Debug")
 set(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O0 -Wall -g -G -lineinfo -ggdb -DDEBUG")
 set(CMAKE_C_FLAGS_DEBUG "$ENV{CFLAGS} -O0 -Wall -g -G -lineinfo -ggdb -DDEBUG")
@@ -18,8 +22,20 @@ set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -lineinfo")
 
 # 使用下面这种方法才能够在编译中加入-G选项
 # add_compile_options("-G")
+# add_compile_options(-fuse-ld=/opt/dtk/cuda/bin/nvcc)
 add_compile_options(--gpu-max-threads-per-block=1024)
 
+# set(CMAKE_LINKER "/opt/dtk/cuda/bin/nvcc")
+# # 指定链接器标志
+# set(CMAKE_CXX_LINKER_FLAGS "${CMAKE_CXX_LINKER_FLAGS} -fuse-ld=/opt/dtk/cuda/bin/nvcc")
+
+# set(CMAKE_EXE_LINKER_FLAGS_INIT "-fuse-ld=ldd")
+# set(CMAKE_MODULE_LINKER_FLAGS_INIT "-fuse-ld=ldd")
+# set(CMAKE_SHARED_LINKER_FLAGS_INIT "-fuse-ld=ldd")
+
+# add_link_options("-fuse-ld=/opt/dtk/cuda/bin/nvcc")
+
+set(CMAKE_VERBOSE_MAKEFILE ON)
 
 # set(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O0 -Wall -g -ggdb -DDEBUG -Xcompiler -rdynamic -lineinfo")
 # set(CMAKE_C_FLAGS_DEBUG "$ENV{CFLAGS} -O0 -Wall -g -ggdb -DDEBUG -Xcompiler -rdynamic -lineinfo")
@@ -55,6 +71,11 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 # 在2.ndsl和1.ndsl中找不到编译器,需要进行设置.在87上要注释掉
 # set(CMAKE_CUDA_COMPILER /usr/local/cuda-12.6/bin/nvcc)
 project(myqrcode LANGUAGES CXX CUDA)
+
+
+# set(CMAKE_LINKER $ENV{CUDA_PATH}/bin/nvcc)
+# set(CMAKE_CXX_LINK_EXECUTABLE "<CMAKE_LINKER> <FLAGS> <CMAKE_CXX_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> -o <TARGET> <LINK_LIBRARIES>")
+set(CMAKE_CUDA_HOST_LINK_LAUNCHER "/opt/dtk/cuda/bin/nvcc")
 
 # 设置可以打印出核函数使用寄存器数和大小数的函数
 # set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --ptxas-options=-v -Xcompiler -rdynamic -lineinfo")
