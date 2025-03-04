@@ -231,7 +231,7 @@ int main(int argc, char *argv[])
   ldA      = m;
   ldOriA_1 = ldW = ldY = ldZ = ldR = m;
 
-#define CHECK_SBR_ACCURARY 1
+#define CHECK_SBR_ACCURARY 0
 #if CHECK_SBR_ACCURARY
   launchKernel_ClearMatrix(gridDim, blockDim, m, n, dY, ldY);
   launchKernel_ClearMatrix(gridDim, blockDim, m, n, dW, ldW);
@@ -245,6 +245,7 @@ int main(int argc, char *argv[])
   CHECK(cudaGetLastError());
   cudaDeviceSynchronize();
 
+
   printf("Begin dA:\n");
   // 打印开头的3x3个元A
   printDeviceMatrixV2(dA, ldA, 3, 3);
@@ -252,7 +253,8 @@ int main(int argc, char *argv[])
   // 打印结尾的3x3个元素
   printDeviceMatrixV2(dA + (m - 3) + (n - 3) * ldA, ldA, 3, 3); 
 
-
+#define COMPUTE_SBR_ENABLE 0
+#if COMPUTE_SBR_ENABLE
   startTimer();
   my_ZY_ZY_SBR_Vector(cusolver_handle,
                cublas_handle,
@@ -338,8 +340,8 @@ int main(int argc, char *argv[])
           2.0 * n * n * (m - 1.0 / 3.0 * n) / (g_sy2sb_time * 1e9));
 #endif  
 
+#endif
 
-#if 1  
   cudaFree(dR);
   cudaFree(dW);
   cudaFree(dY);
@@ -348,7 +350,7 @@ int main(int argc, char *argv[])
   cudaFree(dOriA_1);
   cudaFree(dwork);
 
-
+#if 1  
   double *dSubA;
   cudaMalloc(&dSubA, sizeof(double) * (2 * b) * n);
   int ldSubA = 2 * b;
@@ -375,21 +377,21 @@ int main(int argc, char *argv[])
   /// arguments
   int numBlocksPerSm = 0;
   // Number of threads my_kernel will be launched with
-  int numThreads = 32 * 32;
+  int numThreads = 64 * 16;
   cudaDeviceProp deviceProp;
   cudaGetDeviceProperties(&deviceProp, dev);
 
 
-  // cudaOccupancyMaxActiveBlocksPerMultiprocessor(
-  //     &numBlocksPerSm,
-  //     chasing_kernel_one_timeV10<32>,
-  //     numThreads,
-  //     0);
-  // int blockNum = numBlocksPerSm * deviceProp.multiProcessorCount;
+  cudaOccupancyMaxActiveBlocksPerMultiprocessor(
+      &numBlocksPerSm,
+      chasing_kernel_one_timeV10<32>,
+      numThreads,
+      0);
+  int blockNum = numBlocksPerSm * deviceProp.multiProcessorCount;
 
 
   // launch
-  int blockNum = deviceProp.multiProcessorCount;
+  // int blockNum = deviceProp.multiProcessorCount;
 
   printf("maxThreadsPerBlock: %d\n", deviceProp.maxThreadsPerBlock);
   printf("multiProcessorCount: %d\n", deviceProp.multiProcessorCount);
@@ -426,9 +428,9 @@ int main(int argc, char *argv[])
   int *com;
   cudaMalloc(&com, n*sizeof(int));
 
-  int* g_overFlag;
-  cudaMalloc(&g_overFlag, sizeof(int));
-  cudaMemset(g_overFlag, 0, sizeof(int));
+  // int* g_overFlag;
+  // cudaMalloc(&g_overFlag, sizeof(int));
+  // cudaMemset(g_overFlag, 0, sizeof(int));
 
 
   void *kernelArgs[] = {
@@ -440,14 +442,14 @@ int main(int argc, char *argv[])
       (void *)&ldU,
       (void *)&blockNum,
       (void *)&com,
-      (void *)&g_overFlag,
+      // (void *)&g_overFlag,
   };
-  dim3 dimBlock(32, 32, 1);
+  dim3 dimBlock(64, 16, 1);
   dim3 dimGrid(blockNum, 1, 1);
-  // cudaLaunchCooperativeKernel((void *)chasing_kernel_one_timeV10<32>,
-  //                             dimGrid,
-  //                             dimBlock,
-  //                             kernelArgs);
+  cudaLaunchCooperativeKernel((void *)chasing_kernel_one_timeV10<32>,
+                              dimGrid,
+                              dimBlock,
+                              kernelArgs);
   // chasing_kernel_one_timeV10<32><<<dimGrid, dimBlock>>>(n,b,dSubA, ldSubA, dU,ldU, blockNum, com, g_overFlag);
 
   // 将条带化矩阵复制会原矩阵
