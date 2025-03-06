@@ -53,7 +53,7 @@ extern float g_tc_ozimmu_syr2k_ZY;
 extern float g_gemm_time_ZY;
 
 #define CUSOLVER_CHECK 0
-#define CHECK_BUGLE_CHASING_Q 1
+// #define CHECK_BUGLE_CHASING_Q 1
 
 #define BUGLE_CHASING_COMPUTER_Q 0
 
@@ -253,7 +253,7 @@ int main(int argc, char *argv[])
   // 打印结尾的3x3个元素
   printDeviceMatrixV2(dA + (m - 3) + (n - 3) * ldA, ldA, 3, 3); 
 
-#define COMPUTE_SBR_ENABLE 0
+#define COMPUTE_SBR_ENABLE 1
 #if COMPUTE_SBR_ENABLE
   startTimer();
   my_ZY_ZY_SBR_Vector(cusolver_handle,
@@ -355,6 +355,7 @@ int main(int argc, char *argv[])
   cudaMalloc(&dSubA, sizeof(double) * (2 * b) * n);
   int ldSubA = 2 * b;
 
+#define CHECK_BUGLE_CHASING_Q 0
 #if CHECK_BUGLE_CHASING_Q
   double *OA;
   long ldOA = m;
@@ -398,6 +399,7 @@ int main(int argc, char *argv[])
   printf("numBlocksPerSm: %d\n", numBlocksPerSm);
 
   // printf("numBlocksPerSm: %d\n", numBlocksPerSm);
+  blockNum = 1;
   printf("blockNum: %d\n", blockNum);
 
 
@@ -414,6 +416,12 @@ int main(int argc, char *argv[])
                                                                                 dSubA,
                                                                                 ldSubA);
 
+  printf("begin dSubA:\n");
+  // 打印开头的3x3个元A
+  printDeviceMatrixV2(dSubA, ldSubA, 3, 3);
+
+  // 打印结尾的3x3个元素
+  printDeviceMatrixV2(dSubA +  (n - 3) * ldSubA, ldSubA, 3, 3);
 
   double *dU;
   cudaMalloc(&dU, sizeof(double) * m * n);

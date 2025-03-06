@@ -5,16 +5,18 @@ cmake_minimum_required(VERSION 3.12)
 # set(CMAKE_CXX_COMPILER "/opt/dtk/cuda/bin/nvcc")
 
 
-set(CMAKE_BUILD_TYPE "Debug")
-set(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O0 -Wall -g -G -lineinfo -ggdb -DDEBUG")
-set(CMAKE_C_FLAGS_DEBUG "$ENV{CFLAGS} -O0 -Wall -g -G -lineinfo -ggdb -DDEBUG")
+# set(CMAKE_BUILD_TYPE "Debug")
+# set(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O3 -Wall -g -G -lineinfo -ggdb -DDEBUG")
+# set(CMAKE_C_FLAGS_DEBUG "$ENV{CFLAGS} -O3 -Wall -g -G -lineinfo -ggdb -DDEBUG")
+
+set(CMAKE_BUILD_TYPE "Release")
 
 # set(CUDA_NVCC_FLAGS_DEBUG "${CUDA_NVCC_FLAGS_DEBUG} -g -G -lineinfo")
 
 # set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -g -G -lineinfo")
 
 # 可用于使用ncu可以将ptx和汇编进行对应
-set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -lineinfo")
+# set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -lineinfo")
 # set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -O0")
 
 # set(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -g  -G")
@@ -24,6 +26,7 @@ set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -lineinfo")
 # add_compile_options("-G")
 # add_compile_options(-fuse-ld=/opt/dtk/cuda/bin/nvcc)
 add_compile_options(--gpu-max-threads-per-block=1024)
+add_compile_options(-O3)
 
 # set(CMAKE_LINKER "/opt/dtk/cuda/bin/nvcc")
 # # 指定链接器标志
@@ -75,7 +78,9 @@ project(myqrcode LANGUAGES CXX CUDA)
 
 # set(CMAKE_LINKER $ENV{CUDA_PATH}/bin/nvcc)
 # set(CMAKE_CXX_LINK_EXECUTABLE "<CMAKE_LINKER> <FLAGS> <CMAKE_CXX_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> -o <TARGET> <LINK_LIBRARIES>")
-set(CMAKE_CUDA_HOST_LINK_LAUNCHER "/opt/dtk/cuda/bin/nvcc")
+set(CMAKE_CUDA_HOST_LINK_LAUNCHER $ENV{CUDA_PATH}/bin/nvcc)
+
+# set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -fgpu-rdc")
 
 # 设置可以打印出核函数使用寄存器数和大小数的函数
 # set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --ptxas-options=-v -Xcompiler -rdynamic -lineinfo")

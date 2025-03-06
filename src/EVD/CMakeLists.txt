@@ -20,7 +20,7 @@ foreach(SRC ${CODE_SOURCES})
     target_include_directories(${NAME} PRIVATE ${CMAKE_SOURCE_DIR}/api/inc)
     target_include_directories(${NAME} PRIVATE ${CMAKE_SOURCE_DIR}/inc)
 
-    target_link_libraries(${NAME} my_api_shared_lib)
+    target_link_libraries(${NAME} my_api_shared_lib "-fgpu-rdc")
     target_link_libraries(${NAME} curand cusolver cublas)
 
     # 判断 ${NAME} 是否等于 my_EVD_useLAPACKE_CompQ
