@@ -180,7 +180,7 @@ int main(int argc, char *argv[])
 
   CUDA_RT_CALL(cudaFree(dT));
 
-#define USE_MATRIX_FILE 1
+#define USE_MATRIX_FILE 0
 #if USE_MATRIX_FILE
   string fileName = "/work/home/szhang94/wanghs/SugaSyEVD/data/Symatrix_A_128x128.csv";
   vector<vector<double>> data = readMatrixFromFile(fileName);
@@ -231,7 +231,7 @@ int main(int argc, char *argv[])
   ldA      = m;
   ldOriA_1 = ldW = ldY = ldZ = ldR = m;
 
-#define CHECK_SBR_ACCURARY 0
+#define CHECK_SBR_ACCURARY 1
 #if CHECK_SBR_ACCURARY
   launchKernel_ClearMatrix(gridDim, blockDim, m, n, dY, ldY);
   launchKernel_ClearMatrix(gridDim, blockDim, m, n, dW, ldW);
@@ -350,7 +350,7 @@ int main(int argc, char *argv[])
   cudaFree(dOriA_1);
   cudaFree(dwork);
 
-#if 1  
+#if 0  
   double *dSubA;
   cudaMalloc(&dSubA, sizeof(double) * (2 * b) * n);
   int ldSubA = 2 * b;
